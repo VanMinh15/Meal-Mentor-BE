@@ -1,0 +1,17 @@
+﻿@page
+@model MealMentor.Manager.Pages.AdminPages.ManagerPageModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Manager Dashboard</h1>
+    <a asp-page="/AdminPages/Recipes/Index" class="btn btn-primary">Manage Recipes</a>
+    <a asp-page="/AdminPages/Ingredients/Index" class="btn btn-success">Manage Ingredients</a>
+    <a asp-page="/AdminPages/Report" class="btn btn-warning">Statistics Report</a>
+</div>
+<style>
+    body {
+            background: linear-gradient(90deg, #9DC08B 19.71%, #EDF1D6 52.8%, #609966 100%);
+        }
+</style>

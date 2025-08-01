@@ -1,0 +1,40 @@
+services:
+  mealmentor.manager:
+    image: kanaerudo/mealmentor-fe:latest
+    build:
+      context: .
+      dockerfile: MealMentor.Manager/Dockerfile
+    ports:
+      - "3001:8080"
+    depends_on:
+      - mealmentor.api
+
+  mealmentor.db:
+    image: kanaerudo/mealmentor:latest
+    container_name: MealMentor_Database
+    restart: always
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=yourStrong(!)Password
+    ports:
+      - 1433:1433
+
+  mealmentor.api:
+    build:
+      context: .
+      dockerfile: MealMentor.API/Dockerfile
+    container_name: MealMentor_Api
+    ports:
+      - "8081:8081"
+      - "8082:8080"
+    depends_on:
+      - mealmentor.db
+    environment:
+      - ConnectionStrings_DefaultConnection=Server=mealmentor.db;Database=MealMentorDB;User=sa;Password=yourStrong(!)Password;TrustServerCertificate=True;
+    volumes:
+      - apk_storage:/app/wwwroot/apk
+    command: >
+      sh -c "chmod -R 0777 /app/wwwroot/apk && dotnet MealMentor.API.dll"
+
+volumes:
+  apk_storage:

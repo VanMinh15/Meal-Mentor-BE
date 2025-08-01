@@ -1,0 +1,146 @@
+﻿@page
+@model MealMentor.Manager.Pages.AdminPages.Ingredients.IndexModel
+@{
+}
+
+<h2>Ingredients List</h2>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h4>Search Ingredients</h4>
+    </div>
+    <div class="card-body">
+        <form method="post" asp-page-handler="Search">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="searchTerm">Search Term</label>
+                    <input type="text" class="form-control" id="searchTerm" name="searchTerm" placeholder="Enter food match" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="blackList">Black List</label>
+                    <input type="text" class="form-control" id="blackList" name="blackList" placeholder="Enter blacklist foods" />
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Translated Name</th>
+            <th>Description</th>
+            <th>Food</th>
+            <th>Food Match</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var ingredient in Model.Ingredients)
+        {
+            <tr>
+                <td>@ingredient.Id</td>
+                <td>@ingredient.Name</td>
+                <td>@ingredient.TranslatedName</td>
+                <td>@ingredient.Description</td>
+                <td>@ingredient.Food</td>
+                <td>@ingredient.FoodMatch</td>
+                <td>
+                    <button type="button" class="btn btn-warning" onclick="openUpdateModal(@ingredient.Id, '@ingredient.Name', '@ingredient.TranslatedName', '@ingredient.Description', '@ingredient.Food', '@ingredient.FoodMatch', '@ingredient.Url')">Update</button>
+                    <form method="post" asp-page-handler="Delete" style="display:inline;">
+                        <input type="hidden" name="id" value="@ingredient.Id" />
+                        <input type="hidden" name="currentPage" value="@Model.CurrentPage" />
+                        <input type="hidden" name="pageSize" value="@Model.PageSize" />
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<nav aria-label="Page navigation">
+    <ul class="pagination">
+        <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+            <a class="page-link" asp-page-handler="Search" asp-route-currentPage="@(Model.CurrentPage - 1)" asp-route-pageSize="@Model.PageSize">Previous</a>
+        </li>
+        @for (int i = 1; i <= Model.TotalPages; i++)
+        {
+            <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+                <a class="page-link" asp-page-handler="Search" asp-route-currentPage="@i" asp-route-pageSize="@Model.PageSize">@i</a>
+            </li>
+        }
+        <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+            <a class="page-link" asp-page-handler="Search" asp-route-currentPage="@(Model.CurrentPage + 1)" asp-route-pageSize="@Model.PageSize">Next</a>
+        </li>
+    </ul>
+</nav>
+
+<!-- Update Modal -->
+<div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateModalLabel">Update Ingredient</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-page-handler="Update">
+                    <input type="hidden" id="updateId" name="id" />
+                    <input type="hidden" name="currentPage" value="@Model.CurrentPage" />
+                    <input type="hidden" name="pageSize" value="@Model.PageSize" />
+                    <div class="form-group">
+                        <label for="updateName">Name</label>
+                        <input type="text" class="form-control" id="updateName" name="name" />
+                    </div>
+                    <div class="form-group">
+                        <label for="updateTranslatedName">Translated Name</label>
+                        <input type="text" class="form-control" id="updateTranslatedName" name="translatedName" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="updateDescription">Description</label>
+                        <input type="text" class="form-control" id="updateDescription" name="description"  />
+                    </div>
+                    <div class="form-group">
+                        <label for="updateFood">Food</label>
+                        <input type="text" class="form-control" id="updateFood" name="food" disabled />
+                    </div>
+                    <div class="form-group">
+                        <label for="updateFoodMatch">Food Match</label>
+                        <input type="text" class="form-control" id="updateFoodMatch" name="foodMatch" disabled />
+                    </div>
+                    <div class="form-group">
+                        <label for="updateImage">Image URL</label>
+                        <input type="text" class="form-control" id="updateImage" name="image" />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function openUpdateModal(id, name, translatedName, description, food, foodMatch, image) {
+            document.getElementById('updateId').value = id;
+            document.getElementById('updateName').value = name;
+            document.getElementById('updateTranslatedName').value = translatedName;
+            document.getElementById('updateDescription').value = description;
+            document.getElementById('updateImage').value = image;
+            document.getElementById('updateFood').value = food;
+            document.getElementById('updateFoodMatch').value = foodMatch;
+            $('#updateModal').modal('show');
+        }
+    </script>
+}
+<style>
+body {
+        background: linear-gradient(90deg, #9DC08B 19.71%, #EDF1D6 52.8%, #609966 100%);
+    }
+    </style>

@@ -1,0 +1,44 @@
+﻿@page
+@model MealMentor.Manager.Pages.IndexModel
+@{
+    ViewData["Title"] = "Admin Login";
+}
+
+<div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="card shadow-sm p-4" style="max-width: 400px; width: 100%;">
+        <h1 class="h3 mb-3 fw-normal text-center">Login</h1>
+        <form method="post" asp-page-handler="Login">
+            <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="Email" name="LoginDTO.Email" placeholder="name@example.com" required>
+                <label for="Email">Email address</label>
+                <span asp-validation-for="LoginDTO.Email" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="Password" name="LoginDTO.Password" placeholder="Password" required>
+                <label for="Password">Password</label>
+                <span asp-validation-for="LoginDTO.Password" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+        </form>
+        <div class="text-danger">
+            @foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <p>@error.ErrorMessage</p>
+            }
+        </div>
+    </div>
+</div>
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+    <div class="alert alert-danger" role="alert">
+        @Model.Message
+    </div>
+}
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+<style>
+    body {
+        background: linear-gradient(90deg, #9DC08B 19.71%, #EDF1D6 52.8%, #609966 100%);
+    }
+</style>

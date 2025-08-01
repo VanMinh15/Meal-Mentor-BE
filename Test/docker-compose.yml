@@ -1,0 +1,36 @@
+version: '3.8'
+
+networks:
+  mealmentor_network:  
+    driver: bridge
+volumes:
+  db_data:
+services:
+  mealmentor.db:
+    image: kanaerudo/mealmentor:latest
+    container_name: MealMentor_Database
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=yourStrong(!)Password
+    ports:
+      - 1433:1433
+    networks:
+      - mealmentor_network
+    volumes:
+      - db_data:/var/opt/mssql 
+
+  mealmentor.api:
+    container_name: MealMentor_Api
+    image: kanaerudo/mealmentorapi:latest
+    ports:
+      - "8084:8081"
+      - "8083:8080"
+    depends_on:
+      - mealmentor.db
+    environment:
+      - ConnectionStrings_DefaultConnection=Server=mealmentor.db;Database=MealMentorDB;User=sa;Password=yourStrong(!)Password;TrustServerCertificate=True;
+    networks:
+      - mealmentor_network
+
+    
+    

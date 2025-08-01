@@ -1,0 +1,178 @@
+-- User Table with added Height, Weight, and BirthDate
+CREATE TABLE [User] (
+    Id NVARCHAR(50) NOT NULL PRIMARY KEY,
+    Username NVARCHAR(100),
+    Email NVARCHAR(255),
+    Height FLOAT,             
+    Weight FLOAT,             
+    BirthDate DATETIME,
+    Status NVARCHAR(20),
+    CreatedDateTime DATETIME
+);
+
+CREATE TABLE SubscriptionPlan (
+    PlanId INT IDENTITY(1,1) PRIMARY KEY,
+    Name NVARCHAR(100),
+    Price DECIMAL(15, 2),  
+    DurationDays INT,  -- Duration of the plan in days
+    Description NVARCHAR(255)  
+);
+
+CREATE TABLE Subscription (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    UserId NVARCHAR(50) NOT NULL,
+    PlanId INT NOT NULL,
+    StartDate DATETIME,
+    EndDate DATETIME,
+    Status NVARCHAR(50),
+    CreatedDate DATETIME NOT NULL DEFAULT GETDATE(),
+    LastUpdated DATETIME NOT NULL DEFAULT GETDATE(),
+    FOREIGN KEY (UserId) REFERENCES [User](Id),
+    FOREIGN KEY (PlanId) REFERENCES SubscriptionPlan(PlanId)
+);
+
+-- Unit Table
+CREATE TABLE Unit (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Name NVARCHAR(100),
+    Note NVARCHAR(255)
+);
+
+-- Category Table
+CREATE TABLE Category (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Name NVARCHAR(100),
+    Note NVARCHAR(255)
+);
+
+-- Ingredient Table
+CREATE TABLE Ingredient (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Name NVARCHAR(100),
+    Description NVARCHAR(255),
+    Carbohydrate FLOAT,
+    Protein FLOAT,
+    Lipid FLOAT,
+    Minerals FLOAT,
+    Vitamin FLOAT,
+    CategoryId INT,
+    UnitId INT,
+    FOREIGN KEY (CategoryId) REFERENCES Category(Id),
+    FOREIGN KEY (UnitId) REFERENCES Unit(Id)
+);
+
+-- Recipe Table
+CREATE TABLE Recipe (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Name NVARCHAR(100),
+    Description NVARCHAR(255),
+    Instruction NVARCHAR(MAX),
+    Category NVARCHAR(100),
+    EstimateCost FLOAT,
+    CreatedBy NVARCHAR(50),
+    CreateDateTime DATETIME,
+    Status NVARCHAR(50),
+    Accessibility NVARCHAR(50),
+    FOREIGN KEY (CreatedBy) REFERENCES [User](Id)
+);
+
+-- Meal Table
+CREATE TABLE Meal (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Name NVARCHAR(100),
+    Description NVARCHAR(255),
+    CreatedBy NVARCHAR(50),
+    CreateDateTime DATETIME,
+    Status NVARCHAR(50),
+    Accessibility NVARCHAR(50),
+    FOREIGN KEY (CreatedBy) REFERENCES [User](Id)
+);
+
+-- MealDetails Table
+CREATE TABLE MealDetails (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    MealId INT,
+    RecipeId INT,
+    Note NVARCHAR(255),
+    FOREIGN KEY (MealId) REFERENCES Meal(Id),
+    FOREIGN KEY (RecipeId) REFERENCES Recipe(Id)
+);
+
+-- NutritionSchedule Table
+CREATE TABLE NutritionSchedule (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Name NVARCHAR(100),
+    Description NVARCHAR(255),
+    CreatedBy NVARCHAR(50),
+    CreateDateTime DATETIME,
+    StartDate DATETIME,
+    EndDate DATETIME,
+    Status NVARCHAR(50),
+    Accessibility NVARCHAR(50),
+    FOREIGN KEY (CreatedBy) REFERENCES [User](Id)
+);
+
+-- NutritionScheduleDetail Table
+CREATE TABLE NutritionScheduleDetail (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    ScheduledId INT,
+    PlanId INT,
+    DetailOrder INT,
+    Status NVARCHAR(50),
+    Accessibility NVARCHAR(50),
+    FOREIGN KEY (ScheduledId) REFERENCES NutritionSchedule(Id),
+    FOREIGN KEY (PlanId) REFERENCES NutritionSchedule(Id)
+);
+
+-- PlanDate Table
+CREATE TABLE PlanDate (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Description NVARCHAR(255),
+    CreatedBy NVARCHAR(50),
+    CreateDateTime DATETIME,
+    Accessibility NVARCHAR(50),
+    FOREIGN KEY (CreatedBy) REFERENCES [User](Id)
+);
+-- PlanDateDetail Table
+CREATE TABLE PlanDateDetail (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    MealId INT,
+    PlanId INT,
+    Type NVARCHAR(50),
+    PlanTime DATETIME,
+    FOREIGN KEY (MealId) REFERENCES Meal(Id),
+    FOREIGN KEY (PlanId) REFERENCES PlanDate(Id)
+);
+
+-- IngredientPrepare Table
+CREATE TABLE IngredientPrepare (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    RecipeId INT,
+    IngredientId INT,
+    Amount FLOAT,
+    ProductSuggestion NVARCHAR(255),
+    FOREIGN KEY (RecipeId) REFERENCES Recipe(Id),
+    FOREIGN KEY (IngredientId) REFERENCES Ingredient(Id)
+);
+
+CREATE TABLE Friendship (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    SenderId NVARCHAR(50),           
+    ReceiverId NVARCHAR(50),            
+    Status NVARCHAR(50),       
+    RequestDate DATETIME,     
+    ResponseDate DATETIME,     
+    FOREIGN KEY (SenderId) REFERENCES [User](Id),
+    FOREIGN KEY (ReceiverId) REFERENCES [User](Id)
+);
+
+CREATE TABLE RefreshTokens (
+    TokenId INT IDENTITY(1,1) PRIMARY KEY,  
+    UserId NVARCHAR(50) NOT NULL,                    
+    Token NVARCHAR(256),                    
+    ExpirationDate DATETIME NOT NULL, 
+    IsRevoked BIT NOT NULL DEFAULT 0,              
+    CreatedDate DATETIME NOT NULL DEFAULT GETDATE(),
+    UpdatedDate DATETIME NOT NULL DEFAULT GETDATE(),
+    FOREIGN KEY (UserId) REFERENCES [User](Id)
+);
